@@ -4,6 +4,7 @@ import { useGameStore } from "../store/gameStore";
 import { Plus, Minus, Dices } from 'lucide-react';
 import { useState } from 'react';
 import { getRandomName } from '../utils/funnyNames';
+import Image from 'next/image';
 
 export default function GameUI() {
     const players = useGameStore(state => state.players);
@@ -54,16 +55,18 @@ export default function GameUI() {
     const hasGameStarted = players.some(p => p.bigBeads > 0 || p.smallBeads > 0);
 
     return (
-        <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-4 md:p-8">
+        <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-2 md:p-8">
             {/* Header */}
-            <div className="flex justify-between items-center pointer-events-auto">
-                <div className="flex items-center gap-3">
-                    <img src="/icon.svg" alt="App Icon" className="w-12 h-12 drop-shadow-sm" />
-                    <h1 className="text-2xl font-bold text-slate-900 drop-shadow-sm">Bummerlzähler</h1>
+            <div className="flex flex-col md:flex-row justify-between items-center pointer-events-auto">
+                <div className="flex flex-col md:flex-row items-center gap-0.5 mb-4 md:mb-0">
+                    <div className="relative w-[72px] h-[72px] md:w-12 md:h-12 drop-shadow-sm">
+                        <Image src="/icon.svg" alt="App Icon" fill className="object-contain" />
+                    </div>
+                    <h1 className="text-2xl md:text-2xl font-bold text-slate-900 drop-shadow-sm">Bummerlzähler</h1>
                 </div>
 
-                <div className="flex flex-col items-end gap-1">
-                    <div className="flex items-center gap-8">
+                <div className="flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
+                    <div className="flex items-center justify-center gap-4 md:gap-8 w-full">
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleSaveClick}
