@@ -1,8 +1,9 @@
 'use client';
 
 import { useGameStore } from "../store/gameStore";
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Dices } from 'lucide-react';
 import { useState } from 'react';
+import { getRandomName } from '../utils/funnyNames';
 
 export default function GameUI() {
     const players = useGameStore(state => state.players);
@@ -49,6 +50,8 @@ export default function GameUI() {
             setIsSaveModalOpen(false);
         }
     };
+
+    const hasGameStarted = players.some(p => p.bigBeads > 0 || p.smallBeads > 0);
 
     return (
         <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-4 md:p-8">
@@ -232,9 +235,18 @@ export default function GameUI() {
                                 type="text"
                                 value={player.name}
                                 onChange={(e) => setPlayerName && setPlayerName(player.id, e.target.value)}
-                                className="font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-slate-500 focus:outline-none w-full transition-colors"
+                                className="font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-slate-500 focus:outline-none w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 aria-label={`Edit name for ${player.name}`}
+                                disabled={hasGameStarted}
                             />
+                            <button
+                                onClick={() => setPlayerName && setPlayerName(player.id, getRandomName(player.name))}
+                                className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="Generiere lustigen Namen"
+                                disabled={hasGameStarted}
+                            >
+                                <Dices size={16} />
+                            </button>
                         </div>
 
                         {/* Score Controls */}
