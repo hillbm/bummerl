@@ -1,9 +1,33 @@
 'use client';
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 import BummerlMachine from './BummerlMachine';
 import { Suspense } from 'react';
+
+function MachineWrapper() {
+  const { viewport } = useThree();
+  const isLandscape = viewport.width > viewport.height;
+
+  const position: [number, number, number] = isLandscape ? [0, 0, 0] : [0, 1.2, 0];
+  const scale = isLandscape ? 1.2 : 0.9;
+
+  return (
+    <>
+      <group position={position} scale={scale}>
+        <BummerlMachine />
+      </group>
+
+      <ContactShadows
+        position={position}
+        opacity={0.4}
+        scale={10}
+        blur={1.5}
+        far={1}
+      />
+    </>
+  );
+}
 
 export default function Scene() {
   return (
@@ -16,17 +40,7 @@ export default function Scene() {
         <Suspense fallback={null}>
           <Environment preset="city" />
 
-          <group position={[0, 1.0, 0]} scale={0.7}>
-            <BummerlMachine />
-          </group>
-
-          <ContactShadows
-            position={[0, 1.0, 0]}
-            opacity={0.4}
-            scale={10}
-            blur={1.5}
-            far={1}
-          />
+          <MachineWrapper />
 
           <OrbitControls
             minPolarAngle={0}

@@ -1,8 +1,8 @@
 'use client';
 
 import { useGameStore } from "../store/gameStore";
-import { Plus, Minus, Dices } from 'lucide-react';
-import { useState } from 'react';
+import { Plus, Minus, Dices, Save, FolderOpen, RotateCcw } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { getRandomName } from '../utils/funnyNames';
 import Image from 'next/image';
 
@@ -55,46 +55,64 @@ export default function GameUI() {
 
     const hasGameStarted = players.some(p => p.bigBeads > 0 || p.smallBeads > 0);
 
+    const [isMobileLandscape, setIsMobileLandscape] = useState(false);
+
+    useEffect(() => {
+        const checkOrientation = () => {
+            setIsMobileLandscape(window.matchMedia('(orientation: landscape) and (max-height: 500px)').matches);
+        };
+
+        checkOrientation();
+        window.addEventListener('resize', checkOrientation);
+        return () => window.removeEventListener('resize', checkOrientation);
+    }, []);
+
     return (
-        <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-2 md:p-8">
+        <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-1 md:p-8">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-center pointer-events-auto">
-                <div className="flex flex-col md:flex-row items-center gap-0.5 mb-4 md:mb-0">
-                    <div className="relative w-[72px] h-[72px] md:w-12 md:h-12 drop-shadow-sm">
+            <div className="flex justify-between items-start pointer-events-auto w-full">
+                <div className="flex items-center gap-2">
+                    <div className="relative w-10 h-10 drop-shadow-sm">
                         <Image src="icon.svg" alt="App Icon" fill className="object-contain" />
                     </div>
-                    <h1 className="text-2xl md:text-2xl font-bold text-slate-900 drop-shadow-sm">Bummerlzähler</h1>
+                    <h1 className="text-lg font-bold text-black drop-shadow-sm">Bummerlzähler</h1>
                 </div>
 
-                <div className="flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
-                    <div className="flex items-center justify-center gap-4 md:gap-8 w-full">
-                        <div className="flex items-center gap-2">
+                {!isMobileLandscape && (
+                    <div className="flex flex-col items-end gap-2">
+                        <div className="flex flex-col gap-2">
                             <button
                                 onClick={handleSaveClick}
-                                className="bg-white/90 backdrop-blur text-slate-700 px-4 py-2 rounded-lg hover:bg-white hover:text-slate-900 transition font-medium shadow-sm"
+                                className="bg-white/90 backdrop-blur text-black p-2 rounded-lg hover:bg-white transition shadow-sm"
+                                title="Speichern"
+                                aria-label="Speichern"
                             >
-                                Speichern
+                                <Save size={20} />
                             </button>
                             <button
                                 onClick={() => setIsLoadModalOpen(true)}
-                                className="bg-white/90 backdrop-blur text-slate-700 px-4 py-2 rounded-lg hover:bg-white hover:text-slate-900 transition font-medium shadow-sm"
+                                className="bg-white/90 backdrop-blur text-black p-2 rounded-lg hover:bg-white transition shadow-sm"
+                                title="Laden"
+                                aria-label="Laden"
                             >
-                                Laden
+                                <FolderOpen size={20} />
+                            </button>
+                            <button
+                                onClick={() => setIsResetModalOpen(true)}
+                                className="bg-slate-900 text-white p-2 rounded-lg hover:bg-slate-700 transition shadow-md"
+                                title="Neustart"
+                                aria-label="Neustart"
+                            >
+                                <RotateCcw size={20} />
                             </button>
                         </div>
-                        <button
-                            onClick={() => setIsResetModalOpen(true)}
-                            className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition shadow-md font-medium"
-                        >
-                            Neustart
-                        </button>
+                        {currentGameName && (
+                            <div className="text-xs font-medium text-black/60 drop-shadow-sm bg-white/40 px-2 py-0.5 rounded backdrop-blur-sm">
+                                Spiel: {currentGameName}
+                            </div>
+                        )}
                     </div>
-                    {currentGameName && (
-                        <div className="text-sm font-medium text-slate-900/60 drop-shadow-sm bg-white/40 px-2 py-0.5 rounded backdrop-blur-sm">
-                            Aktuelles Spiel: {currentGameName}
-                        </div>
-                    )}
-                </div>
+                )}
             </div>
 
             {/* Save Modal */}
@@ -231,77 +249,83 @@ export default function GameUI() {
 
 
             {/* Players Status Overlay */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pointer-events-auto">
-                {players.map(player => (
-                    <div key={player.id} className="bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-sm border-l-4 group" style={{ borderColor: player.color }}>
-                        <div className="flex items-center gap-2 mb-2">
-                            <input
-                                type="text"
-                                value={player.name}
-                                onChange={(e) => setPlayerName && setPlayerName(player.id, e.target.value)}
-                                className="font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-slate-500 focus:outline-none w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                aria-label={`Edit name for ${player.name}`}
-                                disabled={hasGameStarted}
-                            />
-                            <button
-                                onClick={() => setPlayerName && setPlayerName(player.id, getRandomName(player.name))}
-                                className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                                title="Generiere lustigen Namen"
-                                disabled={hasGameStarted}
-                            >
-                                <Dices size={16} />
-                            </button>
-                        </div>
-
-                        {/* Score Controls */}
-                        <div className="flex justify-between items-center text-sm mt-1">
-                            <span className="text-slate-500">Punkte:</span>
-                            <div className="flex items-center gap-2 bg-slate-100/50 rounded-lg p-1">
+            {!isMobileLandscape && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pointer-events-auto">
+                    {players.map(player => (
+                        <div key={player.id} className="bg-white/90 backdrop-blur-sm py-2 px-3 rounded-xl shadow-sm border-l-4 group" style={{ borderColor: player.color }}>
+                            <div className="flex items-center gap-2 mb-1">
+                                <input
+                                    type="text"
+                                    value={player.name}
+                                    onChange={(e) => setPlayerName && setPlayerName(player.id, e.target.value)}
+                                    className="font-extrabold text-black bg-transparent border-b border-transparent hover:border-slate-300 focus:border-slate-500 focus:outline-none w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    aria-label={`Edit name for ${player.name}`}
+                                    disabled={hasGameStarted}
+                                />
                                 <button
-                                    onClick={() => handleScoreChange(player.id, player.bigBeads, -1)}
-                                    className="p-1.5 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                                    disabled={player.bigBeads === 0}
-                                    aria-label="Decrease score"
+                                    onClick={() => setPlayerName && setPlayerName(player.id, getRandomName(player.name))}
+                                    className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                    title="Generiere lustigen Namen"
+                                    disabled={hasGameStarted}
                                 >
-                                    <Minus size={14} />
-                                </button>
-                                <span className="font-mono font-bold w-6 text-center text-lg">{player.bigBeads}</span>
-                                <button
-                                    onClick={() => handleScoreChange(player.id, player.bigBeads, 1)}
-                                    className="p-1.5 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                                    disabled={player.bigBeads === 7}
-                                    aria-label="Increase score"
-                                >
-                                    <Plus size={14} />
+                                    <Dices size={18} />
                                 </button>
                             </div>
-                        </div>
 
-                        <div className="flex justify-between items-center text-sm mt-2 pt-2 border-t border-slate-100">
-                            <span className="text-slate-500">Bummerl:</span>
-                            <div className="flex items-center gap-2 bg-slate-100/50 rounded-lg p-1">
-                                <button
-                                    onClick={() => handleBummerlChange(player.id, player.smallBeads, -1)}
-                                    className="p-1.5 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                                    disabled={player.smallBeads === 0}
-                                    aria-label="Decrease bummerl"
-                                >
-                                    <Minus size={14} />
-                                </button>
-                                <span className="font-mono font-bold w-6 text-center text-lg">{player.smallBeads}</span>
-                                <button
-                                    onClick={() => handleBummerlChange(player.id, player.smallBeads, 1)}
-                                    className="p-1.5 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                                    disabled={player.smallBeads === 7}
-                                    aria-label="Increase bummerl"
-                                >
-                                    <Plus size={14} />
-                                </button>
+                            {/* Combined Stats Row */}
+                            <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-100">
+                                {/* Points */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none">Punkte</span>
+                                    <div className="flex items-center gap-1 bg-slate-100/50 rounded-lg p-0.5">
+                                        <button
+                                            onClick={() => handleScoreChange(player.id, player.bigBeads, -1)}
+                                            className="p-1 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                            disabled={player.bigBeads === 0}
+                                            aria-label="Decrease score"
+                                        >
+                                            <Minus size={14} />
+                                        </button>
+                                        <span className="font-mono font-bold w-5 text-center text-base leading-none">{player.bigBeads}</span>
+                                        <button
+                                            onClick={() => handleScoreChange(player.id, player.bigBeads, 1)}
+                                            className="p-1 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                            disabled={player.bigBeads === 7}
+                                            aria-label="Increase score"
+                                        >
+                                            <Plus size={14} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Bummerl */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none">Bummerl</span>
+                                    <div className="flex items-center gap-1 bg-slate-100/50 rounded-lg p-0.5">
+                                        <button
+                                            onClick={() => handleBummerlChange(player.id, player.smallBeads, -1)}
+                                            className="p-1 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                            disabled={player.smallBeads === 0}
+                                            aria-label="Decrease bummerl"
+                                        >
+                                            <Minus size={14} />
+                                        </button>
+                                        <span className="font-mono font-bold w-5 text-center text-base leading-none">{player.smallBeads}</span>
+                                        <button
+                                            onClick={() => handleBummerlChange(player.id, player.smallBeads, 1)}
+                                            className="p-1 rounded-md hover:bg-white hover:shadow-sm text-slate-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                            disabled={player.smallBeads === 7}
+                                            aria-label="Increase bummerl"
+                                        >
+                                            <Plus size={14} />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

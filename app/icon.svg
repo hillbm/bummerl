@@ -4,28 +4,16 @@
   <!-- Green Bead -->
   <circle cx="100" cy="256" r="60" fill="#22c55e"/>
   <circle cx="85" cy="240" r="15" fill="white" fill-opacity="0.3"/>
-  <path d="M85 270 Q100 285 115 270" stroke="black" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="90" cy="250" r="4" fill="black"/>
-  <circle cx="110" cy="250" r="4" fill="black"/>
 
   <!-- Yellow Bead -->
   <circle cx="204" cy="256" r="60" fill="#eab308"/>
   <circle cx="189" cy="240" r="15" fill="white" fill-opacity="0.3"/>
-  <path d="M189 270 Q204 285 219 270" stroke="black" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="194" cy="250" r="4" fill="black"/>
-  <circle cx="214" cy="250" r="4" fill="black"/>
 
   <!-- Black Bead -->
   <circle cx="308" cy="256" r="60" fill="#1f2937"/>
   <circle cx="293" cy="240" r="15" fill="white" fill-opacity="0.1"/>
-  <path d="M293 270 Q308 285 323 270" stroke="white" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="298" cy="250" r="4" fill="white"/>
-  <circle cx="318" cy="250" r="4" fill="white"/>
 
   <!-- Red Bead -->
   <circle cx="412" cy="256" r="60" fill="#ef4444"/>
   <circle cx="397" cy="240" r="15" fill="white" fill-opacity="0.3"/>
-  <path d="M397 270 Q412 285 427 270" stroke="black" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="402" cy="250" r="4" fill="black"/>
-  <circle cx="422" cy="250" r="4" fill="black"/>
 </svg>
