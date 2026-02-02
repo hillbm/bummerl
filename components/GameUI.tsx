@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { getRandomName } from '../utils/funnyNames';
 import Image from 'next/image';
 
+
 export default function GameUI() {
     const players = useGameStore(state => state.players);
     const resetGame = useGameStore(state => state.resetGame);
@@ -60,7 +61,7 @@ export default function GameUI() {
             <div className="flex flex-col md:flex-row justify-between items-center pointer-events-auto">
                 <div className="flex flex-col md:flex-row items-center gap-0.5 mb-4 md:mb-0">
                     <div className="relative w-[72px] h-[72px] md:w-12 md:h-12 drop-shadow-sm">
-                        <Image src="/icon.svg" alt="App Icon" fill className="object-contain" />
+                        <Image src="icon.svg" alt="App Icon" fill className="object-contain" />
                     </div>
                     <h1 className="text-2xl md:text-2xl font-bold text-slate-900 drop-shadow-sm">Bummerlzähler</h1>
                 </div>

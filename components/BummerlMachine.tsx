@@ -13,7 +13,7 @@ const LANES = [
 ];
 
 function BaseMaterial() {
-    const texture = useTexture('/base_wood.png');
+    const texture = useTexture('base_wood.png');
     // Tint the light wood texture to be more brown/warm
     return <meshStandardMaterial map={texture} color="#e6c288" roughness={0.5} />;
 }

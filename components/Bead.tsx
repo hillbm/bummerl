@@ -13,7 +13,7 @@ interface BeadProps {
 import { useTexture } from '@react-three/drei';
 
 export default function Bead({ color, size, position, onClick }: BeadProps) {
-    const texture = useTexture('/bead_texture.png');
+    const texture = useTexture('bead_texture.png');
 
     return (
         <animated.mesh
