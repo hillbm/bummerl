@@ -29,7 +29,7 @@ export default function BummerlMachine() {
 
             {/* Lanes */}
             {LANES.map((lane) => (
-                <Lane key={lane.id} color={lane.color} position={[lane.x, 0, 0]} playerId={lane.id} />
+                <Lane key={lane.id} color={lane.color} position={[lane.x, 0, 0]} laneId={lane.id} />
             ))}
         </group>
     );
