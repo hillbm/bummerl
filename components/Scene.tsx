@@ -1,60 +1,72 @@
 'use client';
 
 import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+import { OrbitControls, Environment, Center } from '@react-three/drei';
 import BummerlMachine from './BummerlMachine';
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 
-function MachineWrapper() {
-  const { viewport, controls } = useThree();
-  const isLandscape = viewport.width > viewport.height;
+function ResponsiveGroup({ children }: { children: React.ReactNode }) {
+  const { viewport } = useThree();
+  const isPortrait = viewport.height > viewport.width;
 
-  const position: [number, number, number] = isLandscape ? [0, 0, 0] : [0, 1.5, 0];
-  const scale = isLandscape ? 1.65 : 0.76;
+  // Machine dimensions estimate (based on Lanes x: -1.5 to 1.5 + base padding)
+  // Approx Width: 4.5 units
+  // Approx Height/Depth: 3 units (looking from angle)
 
-  useEffect(() => {
-    if (controls) {
-      // @ts-expect-error - controls type definition might be missing reset
-      controls.reset();
-    }
-  }, [isLandscape, controls]);
+  // We want to fit ~5 units horizontally and ~5 units vertically to be safe
+  const TARGET_SIZE = 5;
+
+  // Calculate scale to fit the viewport
+  // If viewport is small (portrait phone), width is the bottleneck.
+  // If viewport is wide (desktop), height is usually the bottleneck.
+  const scale = Math.min(viewport.width / TARGET_SIZE, viewport.height / TARGET_SIZE) * 0.85; // 0.85 for padding
+
+  // Vertical Alignment Logic:
+  // Portrait: "aligned on the bottom of the first third".
+  // Viewport Height = H. Center = 0.
+  // Top edge = H/2. Bottom edge = -H/2.
+  // First third (top) range: [H/6, H/2]. Bottom of first third is Y = H/6.
+  // We shift the center of the machine (Y=0) to Y=H/6.
+  // Update: User requested to move it up by 10% more.
+  // New Y = H/6 + H*0.1
+  const yOffset = isPortrait ? (viewport.height / 6) + (viewport.height * 0.1) : 0;
 
   return (
-    <>
-      <group position={position} scale={scale}>
-        <BummerlMachine />
-      </group>
-
-      <ContactShadows
-        position={position}
-        opacity={0.4}
-        scale={10}
-        blur={1.5}
-        far={1}
-      />
-    </>
+    <group scale={scale} position={[0, yOffset, 0]}>
+      {children}
+    </group>
   );
 }
 
 export default function Scene() {
   return (
-    <div className="h-screen w-full bg-slate-50">
+    <div className="h-full w-full">
       <Canvas
         shadows
-        camera={{ position: [5, 5, 5], fov: 45 }}
+        // Adjust camera position to "look down" at the centered object from a slight angle (approx 30 deg)
+        camera={{ position: [4, 5, 7], fov: 45 }}
         dpr={[1, 2]}
       >
         <Suspense fallback={null}>
           <Environment preset="city" />
 
-          <MachineWrapper />
+          <ResponsiveGroup>
+            <Center>
+              <BummerlMachine />
+            </Center>
+          </ResponsiveGroup>
+
+          {/* Shadows at y=0, outside scaling group to keep soft shadow constant or scale with it? 
+              Scaling shadow with object is better physically.
+          */}
+
 
           <OrbitControls
             makeDefault
             minPolarAngle={0}
             maxPolarAngle={Math.PI / 2}
-            minDistance={2}
-            maxDistance={10}
+            minDistance={4}
+            maxDistance={15}
           />
         </Suspense>
       </Canvas>

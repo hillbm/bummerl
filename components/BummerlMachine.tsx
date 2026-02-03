@@ -8,7 +8,7 @@ import { useTexture } from '@react-three/drei';
 const LANES = [
     { id: 'green', color: '#22c55e', x: -1.5 },
     { id: 'yellow', color: '#eab308', x: -0.5 },
-    { id: 'black', color: '#1f2937', x: 0.5 },
+    { id: 'blue', color: '#2563eb', x: 0.5 },
     { id: 'red', color: '#ef4444', x: 1.5 },
 ];
 

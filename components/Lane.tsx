@@ -80,77 +80,67 @@ export default function Lane({ color, position, laneId }: LaneProps) {
         };
     });
 
-    const handleBeadClick = (index: number, type: 'big' | 'small') => {
-        const currentCount = type === 'big' ? bigBeadsRight : smallBeadsRight;
+    const handleBigBeadClick = (index: number) => {
+        if (!lane) return;
+        // Strict logic for Big Beads ONLY
+        const currentCount = lane.bigBeads;
+        // Logic fix: 
+        // If clicking on Right side (already moved), move back to Left.
+        // If clicking on Left side, move to Right.
+
+        // Let's visualize: 
+        // 7 Beads total. Indices 0..6.
+        // Count = 0. All Left. (Right indices: none)
+        // Click index 6. 
+        // calculateNewScore(6, 0): isRight=false. return 7 - 7 = 0? Wait.
+        // My previous logic: 7 - (6+1) = 0.
+        // If I click 6, and I want 1 bead on right...
+        // Formula should be: 7 - index. (7-6=1).
+
+        // Let's re-verify Standard Abacus/Counter logic.
+        // Usually clicking a bead toggles its side.
+
+        // Scenario A: Count = 0. All Left.
+        // Click index 6 (right-most). I want it to move Right. Count -> 1.
+        // isRight check: 6 >= 7? False.
+        // else branch: 
+        // return 7 - 6 = 1. Correct.
+
+        // Scenario B: Count = 1. Bead 6 is Right.
+        // Click index 6. I want to move it Left. Count -> 0.
+        // isRight check: 6 >= (7-1=6)? True.
+        // if branch:
+        // return 7 - (6+1) = 0. Correct.
+
         const isRight = index >= (7 - currentCount);
-        let newScore = currentCount;
+        let newScore = 0;
 
         if (isRight) {
-            newScore = 7 - index;
+            // Move from Right to Left
+            newScore = 7 - (index + 1);
         } else {
-            // If clicking on left side, move it to right.
-            // e.g. click 0 -> 7 beads total? No.
-            // Standard Abacus:
-            // 0 1 2 3 [4 5 6]
-            // if I click 3 (left), I want 4 beads on right.
-            // 7 - 3 = 4.
-
-            // Wait, logic check:
-            // array 0..6.
-            // right count = 3. Beads 4,5,6 are on right.
-            // indices 4,5,6 are isRight.
-            // indices 0,1,2,3 are isLeft.
-            // If I click 2 (left): I want 7 - 2 = 5 beads?
-            // index 2 becomes rightmost of left side?
-            // usually: click bead -> toggle its side.
-            // STACK behavior:
-            // moving bead i to right moves i+1...6 to right too.
-            // moving bead i to left moves 0...i-1 to left too.
-
-            // Simplify:
-            // Click i.
-            // If i is LEFT, move i and all >i to Right?
-            // If i is RIGHT, move i and all <i to Left?
-
-            // Let's stick to "Count" logic.
-            // Value = N beads on right.
-            // Indices 7-N to 6 are on Right.
-
-            // If I click index i:
-            // logic: set cut point at i.
-            // if i is currently Left, set value so i is on Right.
-            // New Value = 7 - i.
-
-            // if i is currently Right, set value so i is on Left.
-            // New Value = 7 - (i + 1).
-
-            // Let's retry the boolean logic:
-            if (isRight) {
-                // It is on the right. User wants to move it left.
-                // That means count decreases.
-                // If I click index 6 (rightmost), count becomes 0?
-                // If I click index 4 (leftmost of right stack), count becomes ?
-                // Right stack: 4,5,6. Count=3.
-                // Click 4. Move to left.
-                // Right stack becomes 5,6. Count=2.
-                // Formula: (7 - 1) - index = 6 - 4 = 2. Correct.
-                newScore = 7 - (index + 1);
-            } else {
-                // It is on the left. User wants to move it right.
-                // Left stack: 0,1,2,3.
-                // Click 3. Move to right.
-                // Right stack becomes 3,4,5,6. Count=4.
-                // Formula: 7 - 3 = 4. Correct.
-                newScore = 7 - index;
-            }
+            // Move from Left to Right
+            newScore = 7 - index;
         }
 
-        if (lane) {
-            if (type === 'big') {
-                updateScore(lane.id, newScore);
-            } else {
-                updateSmallBeads(lane.id, newScore);
-            }
+        updateScore(lane.id, newScore);
+    };
+
+    const handleSmallBeadClick = (index: number) => {
+        if (!lane) return;
+        // Strict logic for Small Beads ONLY
+        const currentCount = lane.smallBeads;
+        const isRight = index >= (7 - currentCount);
+        let newScore = 0;
+
+        if (isRight) {
+            newScore = 7 - (index + 1);
+        } else {
+            newScore = 7 - index;
+        }
+
+        if (updateSmallBeads) {
+            updateSmallBeads(lane.id, newScore);
         }
     };
 
@@ -191,7 +181,7 @@ export default function Lane({ color, position, laneId }: LaneProps) {
                         // Interpolate position from angle
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         position={props.angle.to(a => getArcPosition(bigRadius, a)) as any}
-                        onClick={(e) => { e.stopPropagation(); handleBeadClick(i, 'big'); }}
+                        onClick={(e) => { e.stopPropagation(); handleBigBeadClick(i); }}
                     />
                 ))}
             </group>
@@ -206,7 +196,7 @@ export default function Lane({ color, position, laneId }: LaneProps) {
                         // Interpolate position from angle
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         position={props.angle.to(a => getArcPosition(smallRadius, a)) as any}
-                        onClick={(e) => { e.stopPropagation(); handleBeadClick(i, 'small'); }}
+                        onClick={(e) => { e.stopPropagation(); handleSmallBeadClick(i); }}
                     />
                 ))}
             </group>
