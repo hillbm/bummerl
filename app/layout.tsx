@@ -15,10 +15,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Bummerlzähler",
   description: "Digital Bummerl Counter",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Bummerlzähler",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#f8fafc",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

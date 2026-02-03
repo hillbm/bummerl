@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface Player {
     id: string;
@@ -31,7 +32,7 @@ interface GameState {
     resetGame: () => void;
 }
 
-export const useGameStore = create<GameState>((set) => ({
+export const useGameStore = create<GameState>()(persist((set) => ({
     players: [
         { id: 'green', name: 'Player 1', color: '#22c55e', bigBeads: 0, smallBeads: 0, hasSmallBead: false },
         { id: 'yellow', name: 'Player 2', color: '#eab308', bigBeads: 0, smallBeads: 0, hasSmallBead: false },
@@ -87,9 +88,16 @@ export const useGameStore = create<GameState>((set) => ({
         )
     })),
 
-    resetGame: () => set((state) => ({
-        players: state.players.map(p => ({ ...p, bigBeads: 0, smallBeads: 0, hasSmallBead: false })),
-        history: []
+    resetGame: () => set(() => ({
+        players: [
+            { id: 'green', name: 'Player 1', color: '#22c55e', bigBeads: 0, smallBeads: 0, hasSmallBead: false },
+            { id: 'yellow', name: 'Player 2', color: '#eab308', bigBeads: 0, smallBeads: 0, hasSmallBead: false },
+            { id: 'black', name: 'Player 3', color: '#1f2937', bigBeads: 0, smallBeads: 0, hasSmallBead: false },
+            { id: 'red', name: 'Player 4', color: '#ef4444', bigBeads: 0, smallBeads: 0, hasSmallBead: false },
+        ],
+        activePlayerId: null,
+        history: [],
+        currentGameName: null
     })),
 
     saveGame: (name) => set((state) => ({
@@ -113,4 +121,4 @@ export const useGameStore = create<GameState>((set) => ({
         delete newSaved[name];
         return { savedGames: newSaved };
     })
-}));
+}), { name: 'bummerl-storage' }));

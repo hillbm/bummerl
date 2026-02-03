@@ -2,7 +2,7 @@
 
 import Wire from './Wire';
 import Bead from './Bead';
-import { useSprings, config } from '@react-spring/three';
+import { useSprings } from '@react-spring/three';
 import { useGameStore } from '../store/gameStore';
 import { useEffect } from 'react';
 
@@ -53,18 +53,28 @@ export default function Lane({ color, position, playerId }: LaneProps & { player
 
     // Big Beads Animation
     const [bigSprings, bigApi] = useSprings(7, (i) => {
-        const angle = startAngleBig + i * bigSpacing;
+        const threshold = 7 - bigBeadsRight;
+        const isRight = i >= threshold;
+        const angle = isRight
+            ? endAngleBig - ((6 - i) * bigSpacing)
+            : startAngleBig + (i * bigSpacing);
         return {
             angle,
+            from: { angle },
             config: moveConfig
         };
     });
 
     // Small Beads Animation
     const [smallSprings, smallApi] = useSprings(7, (i) => {
-        const angle = startAngleSmall + i * smallSpacing;
+        const threshold = 7 - smallBeadsRight;
+        const isRight = i >= threshold;
+        const angle = isRight
+            ? endAngleSmall - ((6 - i) * smallSpacing)
+            : startAngleSmall + (i * smallSpacing);
         return {
             angle,
+            from: { angle },
             config: moveConfig
         };
     });
