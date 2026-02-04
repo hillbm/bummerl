@@ -2,7 +2,7 @@
 
 import Lane from './Lane';
 
-import { useTexture } from '@react-three/drei';
+import { useTexture, Decal } from '@react-three/drei';
 
 // Configuration for the 4 lanes
 const LANES = [
@@ -19,12 +19,31 @@ function BaseMaterial() {
 }
 
 export default function BummerlMachine() {
+    const logo = useTexture('/branding_logo.png');
+
     return (
         <group>
             {/* Wooden Base */}
             <mesh receiveShadow castShadow position={[0, -0.2, 0]}>
                 <boxGeometry args={[5, 0.4, 3]} />
                 <BaseMaterial />
+                <Decal
+                    position={[-1.8, 0, 1.5]}
+                    rotation={[0, 0, 0]}
+                    scale={[1.2, 0.25, 1]}
+                >
+                    <meshStandardMaterial
+                        map={logo}
+                        transparent
+                        opacity={0.35}
+                        roughness={1}
+                        polygonOffset
+                        polygonOffsetFactor={-1}
+                        depthWrite={false}
+                        bumpMap={logo}
+                        bumpScale={-0.08}
+                    />
+                </Decal>
             </mesh>
 
             {/* Lanes */}

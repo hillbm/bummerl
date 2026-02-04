@@ -19,7 +19,7 @@ function ResponsiveGroup({ children }: { children: React.ReactNode }) {
   // Calculate scale to fit the viewport
   // If viewport is small (portrait phone), width is the bottleneck.
   // If viewport is wide (desktop), height is usually the bottleneck.
-  const scale = Math.min(viewport.width / TARGET_SIZE, viewport.height / TARGET_SIZE) * 0.85; // 0.85 for padding
+  const scale = Math.min(viewport.width / TARGET_SIZE, viewport.height / TARGET_SIZE) * 0.95; // 0.95 for padding
 
   // Vertical Alignment Logic:
   // Portrait: "aligned on the bottom of the first third".
@@ -28,8 +28,8 @@ function ResponsiveGroup({ children }: { children: React.ReactNode }) {
   // First third (top) range: [H/6, H/2]. Bottom of first third is Y = H/6.
   // We shift the center of the machine (Y=0) to Y=H/6.
   // Update: User requested to move it up by 10% more.
-  // New Y = H/6 + H*0.1
-  const yOffset = isPortrait ? (viewport.height / 6) + (viewport.height * 0.1) : 0;
+  // New Y (Landscape) = H*0.2
+  const yOffset = isPortrait ? (viewport.height / 6) + (viewport.height * 0.1) : (viewport.height * 0.2);
 
   return (
     <group scale={scale} position={[0, yOffset, 0]}>
@@ -65,7 +65,7 @@ export default function Scene() {
             makeDefault
             minPolarAngle={0}
             maxPolarAngle={Math.PI / 2}
-            minDistance={4}
+            minDistance={2.5}
             maxDistance={15}
           />
         </Suspense>
