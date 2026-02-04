@@ -16,6 +16,7 @@ export default function SaveLoadModal({ isOpen, onClose, mode }: SaveLoadModalPr
     const deleteGame = useGameStore(state => state.deleteGame);
 
     const [processName, setProcessName] = useState('');
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
     // Format timestamp
     const formatDate = (ts: number) => new Date(ts).toLocaleString('de-DE', {
@@ -32,23 +33,22 @@ export default function SaveLoadModal({ isOpen, onClose, mode }: SaveLoadModalPr
     };
 
     const handleOverwrite = (game: SavedGame) => {
-        if (confirm(`Spielstand "${game.name}" wirklich überschreiben?`)) {
-            saveGame(game.name, game.id);
-            onClose();
-        }
+        saveGame(game.name, game.id);
+        onClose();
     };
 
     const handleLoad = (id: string) => {
-        if (confirm('Aktuelles Spiel verwerfen und diesen Spielstand laden?')) {
-            loadGame(id);
-            onClose();
-        }
+        loadGame(id);
+        onClose();
     };
 
     const handleDelete = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (confirm('Spielstand wirklich löschen?')) {
+        if (confirmDeleteId === id) {
             deleteGame(id);
+            setConfirmDeleteId(null);
+        } else {
+            setConfirmDeleteId(id);
         }
     };
 
@@ -107,10 +107,17 @@ export default function SaveLoadModal({ isOpen, onClose, mode }: SaveLoadModalPr
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={(e) => handleDelete(game.id, e)}
-                                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                                title="Löschen"
+                                                className={`p-2 rounded-lg transition-all ${confirmDeleteId === game.id
+                                                    ? 'bg-red-500 text-white hover:bg-red-600 px-3 text-xs font-bold'
+                                                    : 'text-slate-400 hover:text-red-500 hover:bg-red-50'
+                                                    }`}
+                                                title={confirmDeleteId === game.id ? "Wirklich löschen?" : "Löschen"}
                                             >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                                {confirmDeleteId === game.id ? (
+                                                    "Bestätigen"
+                                                ) : (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                                )}
                                             </button>
                                         </div>
                                     )}
