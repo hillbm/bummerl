@@ -17,7 +17,7 @@ export default function GameMenu() {
     return (
         <>
             {/* Menu Button - Visible Top Right, Portrait Only (Landscape hidden via CSS or parent layout) */}
-            <div className="fixed top-4 right-4 z-40 landscape:hidden">
+            <div className="fixed top-[calc(1rem+env(safe-area-inset-top))] right-4 z-40 landscape:hidden">
                 <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     className="w-10 h-10 bg-white/90 backdrop-blur shadow-sm border border-slate-200 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-50 transition-colors"
