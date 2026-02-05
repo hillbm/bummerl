@@ -46,13 +46,13 @@ export const useGameStore = create<GameState>()(
 
             updateScore: (laneId, count) => set((state) => ({
                 lanes: state.lanes.map(l =>
-                    l.id === laneId ? { ...l, bigBeads: count } : l
+                    l.id === laneId ? { ...l, bigBeads: Math.max(0, Math.min(7, count)) } : l
                 )
             })),
 
             updateSmallBeads: (laneId, count) => set((state) => ({
                 lanes: state.lanes.map(l =>
-                    l.id === laneId ? { ...l, smallBeads: count } : l
+                    l.id === laneId ? { ...l, smallBeads: Math.max(0, Math.min(7, count)) } : l
                 )
             })),
 

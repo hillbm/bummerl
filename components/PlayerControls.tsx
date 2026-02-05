@@ -14,24 +14,28 @@ const COLOR_MAP: Record<string, string> = {
 function Stepper({
     value,
     onChange,
-    max = 7
+    max = 7,
+    min = 0
 }: {
     value: number;
     onChange: (val: number) => void;
     max?: number;
+    min?: number;
 }) {
     return (
         <div className="flex items-center bg-gray-100 rounded-md overflow-hidden h-8">
             <button
-                className="px-2 hover:bg-gray-200 active:bg-gray-300 text-gray-600 font-bold"
-                onClick={() => onChange(Math.max(0, value - 1))}
+                className={`px-2 font-bold ${value <= min ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-200 active:bg-gray-300'}`}
+                onClick={() => onChange(Math.max(min, value - 1))}
+                disabled={value <= min}
             >
                 -
             </button>
             <span className="w-6 text-center text-sm font-medium text-gray-800">{value}</span>
             <button
-                className="px-2 hover:bg-gray-200 active:bg-gray-300 text-gray-600 font-bold"
+                className={`px-2 font-bold ${value >= max ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-200 active:bg-gray-300'}`}
                 onClick={() => onChange(Math.min(max, value + 1))}
+                disabled={value >= max}
             >
                 +
             </button>
